@@ -26,7 +26,7 @@ export default function Home({lista}) {
                 {item.title}
               </a>
             </li>
-          ))}
+          ))}  
         </ul>
       </main>
     </div>
