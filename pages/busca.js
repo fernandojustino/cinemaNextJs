@@ -1,9 +1,23 @@
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 import { imageBase } from '../lib/tmdb'
-import Link from 'next/link'
+import { useState } from 'react'
 
-export default function Home({lista}) {
+export default function Busca() {
+
+  const [searchText, setSearchText] = useState('') ;
+  const [movieList, setMovieList] = useState([]); 
+
+  const handleSearch = async () => { 
+    if(searchText != '') {
+      const result = await fetch(`http://localhost:3000/api/search?q=${searchText}`)
+      const json = await result.json();
+
+      setMovieList(json.list);
+      console.log(json); 
+    }
+  }
+
   return (
     <div className={styles.container}>
       <Head>
@@ -13,13 +27,14 @@ export default function Home({lista}) {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Filmes em Destaques 
+          Busca
         </h1>
-
-        <Link href="/busca">Ir para busca</Link>  
+        <input type="text" value={searchText} onChange={e=>setSearchText(e.target.value)}/>
+        <button onClick={handleSearch}>Buscar</button>
+        <hr/>
 
         <ul>
-          {lista.map(item=>(
+          {movieList.map(item=>(
             <li>
               <a href={`/movie/${item.id}`}>
                 <img src={`${imageBase}${item.poster_path}`} width="150" /> <br/>
@@ -27,19 +42,10 @@ export default function Home({lista}) {
               </a>
             </li>
           ))}
+
         </ul>
+
       </main>
     </div>
   )
-}
-
-export async function getServerSideProps() {
-  const res = await fetch('http://localhost:3000/api/trending');
-  const json = await res.json() ; 
-
-  return {
-    props: {
-      lista: json.list
-    }
-  }
 }
